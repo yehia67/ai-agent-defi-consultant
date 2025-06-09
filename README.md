@@ -1,4 +1,4 @@
-# Project DeFi Agent Consultant
+# DeFi AI Agent Consultant
 
 The Wallet Agent Consultant is a new AI agent that integrates with any digital wallet to help manage your savings according to your preferred strategy. 
 
