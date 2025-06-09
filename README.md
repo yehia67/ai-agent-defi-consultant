@@ -43,5 +43,5 @@ ETHEREUM_PROVIDER_SEPOLIA=     # RPC URL for the Ethereum Sepolia testnet
 
 # Start the project
 ```
-elizaos start
+npx elizaos start
 ```
