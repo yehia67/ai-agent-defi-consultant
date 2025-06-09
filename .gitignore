@@ -1,0 +1,31 @@
+# Node.js
+node_modules/
+bun.lock
+
+# Build output
+dist/
+
+# ElizaOS-specific
+.eliza/
+.elizadb/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# OS & Editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+
+# Test coverage and temp
+coverage/
+*.tsbuildinfo
+
+# IDE folders
+.vscode/
+.idea/
