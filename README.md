@@ -27,6 +27,7 @@ cp .env.example .env
 ```
 
 # Edit the .env file and fill in the required values
+
 ## Required environment variables
 ```
 OPENAI_API_KEY=                # Your OpenAI API key
