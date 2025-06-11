@@ -21,6 +21,11 @@ git clone https://github.com/yehia67/ai-agent-defi-consultant.git
 cd ai-agent-defi-consultant
 ```
 
+# Install dependencies 
+```
+npm i
+```
+
 # Copy the environment variables template
 ```
 cp .env.example .env
@@ -38,5 +43,5 @@ ETHEREUM_PROVIDER_SEPOLIA=     # RPC URL for the Ethereum Sepolia testnet
 
 # Start the project
 ```
-elizaos start
+npx elizaos start
 ```
