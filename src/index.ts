@@ -5,15 +5,14 @@ import {
   type Project,
   type ProjectAgent,
 } from '@elizaos/core';
-import starterPlugin from './plugin.ts';
+import smartWalletPlugin from './smartWalletPlugin.ts';
+
 /**
  * Represents the default character (Eliza) with her specific attributes and behaviors.
  * Eliza responds to a wide range of messages, is helpful and conversational.
  * She interacts with users in a concise, direct, and helpful manner, using humor and empathy effectively.
  * Eliza's responses are geared towards providing assistance on various topics while maintaining a friendly demeanor.
  */
-
-console.log(`process.env.EVM_PRIVATE_KEY : ${JSON.stringify(process.env.EVM_PRIVATE_KEY, null, 2)}`);
 
 export const character: Character = {
   name: 'Eliza',
@@ -136,9 +135,6 @@ export const character: Character = {
   },
 };
 
-console.log(`character pluginsssssssssssssssssssssssssssssssssssssss: ${JSON.stringify(character.plugins, null, 2)}`);
-
-
 const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
   logger.info('Initializing character');
   logger.info('Name: ', character.name);
@@ -147,7 +143,7 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 export const projectAgent: ProjectAgent = {
   character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  // plugins: [starterPlugin], <-- Import custom plugins here
+  plugins: [smartWalletPlugin],
 };
 const project: Project = {
   agents: [projectAgent],
