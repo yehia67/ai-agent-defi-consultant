@@ -3,7 +3,6 @@ import type { Plugin } from '@elizaos/core';
 import {
   type Action,
   type Content,
-  type GenerateTextParams,
   type HandlerCallback,
   type IAgentRuntime,
   type Memory,
