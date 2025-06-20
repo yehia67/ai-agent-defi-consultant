@@ -5,15 +5,14 @@ import {
   type Project,
   type ProjectAgent,
 } from '@elizaos/core';
-import starterPlugin from './plugin.ts';
+import smartWalletPlugin from './smartWalletPlugin.ts';
+
 /**
  * Represents the DeFi Consultant character with specialized knowledge in web3 investments and self-custodial wallet management.
  * The DeFi Consultant provides expert guidance on digital asset management, cross-chain DeFi strategies, and yield optimization.
  * It helps users navigate the complexities of decentralized finance, optimize gas fees, and identify investment opportunities.
  * The consultant focuses on long-term investment strategies, wallet security, and personalized financial planning in the web3 space.
  */
-
-console.log(`process.env.EVM_PRIVATE_KEY : ${JSON.stringify(process.env.EVM_PRIVATE_KEY, null, 2)}`);
 
 export const character: Character = {
   name: 'DeFi Consultant',
@@ -179,7 +178,7 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 export const projectAgent: ProjectAgent = {
   character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  // plugins: [starterPlugin], <-- Import custom plugins here
+  plugins: [smartWalletPlugin],
 };
 const project: Project = {
   agents: [projectAgent],
