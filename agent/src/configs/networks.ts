@@ -1,9 +1,9 @@
-import { DEFAULT_ENTRYPOINT_ADDRESS } from "node_modules/@biconomy/account/dist/_types/account";
+import { DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 
 // --- Avalanche Configuration ---
 export const AVALANCHE_FUJI_CONFIG = {
     chainId: 43113,
-    rpcUrl: 'https://api.avax-test.network/ext/bc/C/rpc',
+    rpcUrl: 'https://avalanche-fuji.drpc.org',
     bundlerUrl: 'https://bundler.biconomy.io/api/v2/43113', // Biconomy bundler for Avalanche Fuji
     paymasterUrl: 'https://paymaster.biconomy.io/api/v1/43113', // Biconomy paymaster for Avalanche Fuji
     entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS
