@@ -5,6 +5,7 @@ import {
   type Project,
   type ProjectAgent,
 } from '@elizaos/core';
+import chainlinkAutomationPlugin from './plugins/chainlink-automation-plugin/plugin.ts';
 import smartWalletPlugin from './smartWalletPlugin.ts';
 
 /**
@@ -178,7 +179,7 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 export const projectAgent: ProjectAgent = {
   character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [smartWalletPlugin],
+  plugins: [smartWalletPlugin, chainlinkAutomationPlugin],
 };
 const project: Project = {
   agents: [projectAgent],
