@@ -6,7 +6,7 @@ import {
   type ProjectAgent,
 } from '@elizaos/core';
 import chainlinkAutomationPlugin from './plugins/chainlink-automation-plugin/plugin.ts';
-import smartWalletPlugin from './smartWalletPlugin.ts';
+import smartWalletPlugin from './plugins/smart-wallet-plugin/plugin.ts';
 
 /**
  * Represents the DeFi Consultant character with specialized knowledge in web3 investments and self-custodial wallet management.
