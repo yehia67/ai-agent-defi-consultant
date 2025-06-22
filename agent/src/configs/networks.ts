@@ -1,4 +1,4 @@
-import { DEFAULT_ENTRYPOINT_ADDRESS } from "node_modules/@biconomy/account/dist/_types/account";
+import { DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 
 // --- Avalanche Configuration ---
 export const AVALANCHE_FUJI_CONFIG = {
