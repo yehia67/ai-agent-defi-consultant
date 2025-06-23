@@ -9,11 +9,6 @@ import {
 } from '@elizaos/core';
 
 import { generateBiconomyWallet } from './provider';
-
-
-
-
-
 // --- Action ---
 export const createWalletAction: Action = {
     name: 'CREATE_WALLET',
@@ -31,40 +26,83 @@ export const createWalletAction: Action = {
         callback?: HandlerCallback
     ): Promise<Content> => {
         try {
+            // Log the start of wallet creation
+            logger.info('Starting wallet creation process');
+            
             const useMainnet = process.env.USE_AVALANCHE_MAINNET === 'true';
-            const { smartAddress, chainName, chainId } = await generateBiconomyWallet(useMainnet);
+            const { smartAddress, chainName, chainId, eoa } = await generateBiconomyWallet(useMainnet);
+
+            // Log successful wallet creation
+            logger.info(`Wallet created successfully: ${smartAddress} on ${chainName}`);
 
             const responseContent: Content = {
-                text: `🪪 A Biconomy smart wallet has been created!\n\n` +
-                      `📍 **Address:** ${smartAddress}\n` +
-                      `🌐 **Network:** ${chainName}\n` +
-                      `🔗 **Chain ID:** ${chainId}\n\n` +
-                      `This is an ERC-4337 compatible smart contract wallet with advanced features like gasless transactions and social recovery.`,
-                actions: ['CREATE_WALLET'],
-                source: message.content?.source || 'biconomy_plugin'
+              text:
+                `🪪 A new smart wallet has been created!\n\n` +
+                `📍 **Address:** ${smartAddress}\n` +
+                `🔐 **Private Key:** ${eoa.privateKey}\n` +
+                `🌐 **Network:** ${chainName}\n` +
+                `🔗 **Chain ID:** ${chainId}\n\n` +
+                `This wallet supports:\n` +
+                `- Gasless transactions\n` +
+                `- Social recovery\n` +
+                `- Cross-chain operations\n` +
+                `- Smart contract interactions\n\n` +
+                `Would you like help funding your wallet or exploring DeFi opportunities?`,
+              actions: ["CREATE_WALLET"],
+              source: message.content?.source || "biconomy_plugin",
+              data: {
+                address: smartAddress,
+                privateKey: eoa.privateKey,
+                chainId: chainId,
+                chainName: chainName
+              }
             };
 
+            // Send immediate callback to prevent hanging
             if (callback) {
-                await callback(responseContent);
+                try {
+                    await callback({
+                        type: 'SUCCESS',
+                        message: `Wallet created: ${smartAddress} on ${chainName}`,
+                        data: {
+                            address: smartAddress,
+                            chainId,
+                            chainName,
+                            privateKey: eoa.privateKey
+                        }
+                    });
+                    logger.info('CREATE_WALLET callback sent successfully');
+                } catch (callbackError) {
+                    logger.error('CREATE_WALLET callback error:', callbackError);
+                }
             }
 
-            logger.info(`Wallet created: ${smartAddress} on ${chainName}`);
+            // Return the response content
             return responseContent;
 
         } catch (error) {
             logger.error('Error in createWalletAction:', error);
             
-            const errorContent: Content = {
-                text: `❌ Failed to create wallet: ${error.message}`,
-                actions: ['CREATE_WALLET'],
-                source: message.content?.source || 'biconomy_plugin'
-            };
-
+            // Send error callback
             if (callback) {
-                await callback(errorContent);
+                try {
+                    await callback({
+                        type: 'ERROR',
+                        message: `Failed to create wallet: ${error.message}`,
+                        data: { error: error.message }
+                    });
+                    logger.info('CREATE_WALLET error callback sent successfully');
+                } catch (callbackError) {
+                    logger.error('CREATE_WALLET error callback error:', callbackError);
+                }
             }
-
-            return errorContent;
+            
+            // Return error response
+            return {
+                text: `❌ Failed to create wallet: ${error.message}`,
+                actions: ["CREATE_WALLET"],
+                source: message.content?.source || "biconomy_plugin"
+            };
         }
     },
     examples: [
@@ -72,13 +110,20 @@ export const createWalletAction: Action = {
             {
                 name: '{{name1}}',
                 content: {
-                    text: 'create a wallet'
+                    text: '🪪 A new smart wallet has been created!\n\n📍 **Address:** 0xd3b21E52Ae886f73933C591407EA3DA4E8Dd34D0\n🔐 **Private Key:** 0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d\n🌐 **Network:** Avalanche Fuji Testnet\n🔗 **Chain ID:** 43113\n\nThis wallet supports:\n- Gasless transactions\n- Social recovery\n- Cross-chain operations\n- Smart contract interactions\n\nWould you like help funding your wallet or exploring DeFi opportunities?',
+                    actions: ['CREATE_WALLET'],
+                    data: {
+                      address: '0xd3b21E52Ae886f73933C591407EA3DA4E8Dd34D0',
+                      privateKey: '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d',
+                      chainId: 43113,
+                      chainName: 'Avalanche Fuji Testnet'
+                    }
                 }
             },
             {
                 name: '{{name2}}',
                 content: {
-                    text: '🪪 A Biconomy smart wallet has been created!\n\n📍 **Address:** 0x...\n🌐 **Network:** Avalanche Fuji Testnet\n🔗 **Chain ID:** 43113',
+                    text: '🪪 A Biconomy smart wallet has been created!\n\n📍 **Address:** 0x...\n🔐 **Private keys:** 0x1234...abcd\n🌐 **Network:** Avalanche Fuji Testnet\n🔗 **Chain ID:** 43113\n\nThis is an ERC-4337 compatible smart contract wallet with advanced features like gasless transactions and social recovery.',
                     actions: ['CREATE_WALLET']
                 }
             }
@@ -93,7 +138,7 @@ export const createWalletAction: Action = {
             {
                 name: '{{name2}}',
                 content: {
-                    text: '🪪 A Biconomy smart wallet has been created!\n\n📍 **Address:** 0x...\n🌐 **Network:** Avalanche Fuji Testnet\n🔗 **Chain ID:** 43113',
+                    text: '🪪 A Biconomy smart wallet has been created!\n\n📍 **Address:** 0x...\n🔐 **Private keys:** 0x1234...abcd\n🌐 **Network:** Avalanche Fuji Testnet\n🔗 **Chain ID:** 43113\n\nThis is an ERC-4337 compatible smart contract wallet with advanced features like gasless transactions and social recovery.',
                     actions: ['CREATE_WALLET']
                 }
             }

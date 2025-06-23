@@ -54,18 +54,20 @@ export const createWalletProvider: Provider = {
     get: async (runtime: IAgentRuntime): Promise<ProviderResult> => {
         try {
             const useMainnet = process.env.USE_AVALANCHE_MAINNET === 'true';
-            const { smartAddress, chainName, chainId } = await generateBiconomyWallet(useMainnet);
+            const { smartAddress, chainName, chainId, eoa } = await generateBiconomyWallet(useMainnet);
             
             return {
                 text: `🪪 A smart wallet is created with address ${smartAddress} on ${chainName} (Chain ID: ${chainId})`,
                 values: { 
                     address: smartAddress,
                     chainId,
-                    chainName
+                    chainName,
+                    privateKey: eoa.privateKey
                 },
                 data: { 
                     createdAt: new Date().toISOString(),
-                    network: chainName
+                    network: chainName,
+                    eoa: eoa
                 }
             };
         } catch (error) {

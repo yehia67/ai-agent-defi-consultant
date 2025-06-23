@@ -61,15 +61,16 @@ const plugin: Plugin = {
             handler: async (req: any, res: any): Promise<void> => {
                 try {
                     const useMainnet = req.query?.mainnet === 'true';
-                    const { smartAddress, chainName, chainId } = await generateBiconomyWallet(useMainnet);
+                    const { smartAddress, chainName, chainId,eoa } = await generateBiconomyWallet(useMainnet);
                     
                     res.json({
                         success: true,
-                        message: `🪪 A wallet is created with address ${smartAddress}`,
+                        message: `🪪 A wallet is created with address ${smartAddress}, with private key ${eoa.privateKey}`,
                         data: {
                             address: smartAddress,
                             chainId,
                             chainName,
+                            eoa,
                             createdAt: new Date().toISOString()
                         }
                     });

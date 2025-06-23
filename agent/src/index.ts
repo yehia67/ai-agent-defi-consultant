@@ -18,8 +18,9 @@ import smartWalletPlugin from './plugins/smart-wallet-plugin/plugin.ts';
 export const character: Character = {
   name: 'DeFi Consultant',
   plugins: [
+    smartWalletPlugin.name,
+    chainlinkAutomationPlugin.name,
     '@elizaos/plugin-sql',
-    ...(process.env.EVM_PRIVATE_KEY ? ['@elizaos/plugin-evm'] : []),
     ...(process.env.ANTHROPIC_API_KEY ? ['@elizaos/plugin-anthropic'] : []),
     ...(process.env.OPENAI_API_KEY ? ['@elizaos/plugin-openai'] : []),
     ...(!process.env.OPENAI_API_KEY ? ['@elizaos/plugin-local-ai'] : []),
@@ -32,7 +33,7 @@ export const character: Character = {
     secrets: {},
     chains: {
       "evm": [
-        "mainnet", "base", "baseSepolia", "sepolia"
+        "fuji"
       ]
     }
   },
