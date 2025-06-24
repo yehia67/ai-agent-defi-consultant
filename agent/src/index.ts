@@ -18,7 +18,6 @@ import chainlinkAutomationPlugin from './plugins/chainlink-automation-plugin/plu
 export const character: Character = {
   name: 'DeFi Consultant',
   plugins: [
-    ...(process.env.CHAINLINK_AUTOMATION_DEPLOYER_PK ? ['@elizaos/plugin-evm'] : []),
     '@elizaos/plugin-sql',
     ...(process.env.ANTHROPIC_API_KEY ? ['@elizaos/plugin-anthropic'] : []),
     ...(process.env.OPENAI_API_KEY ? ['@elizaos/plugin-openai'] : []),
