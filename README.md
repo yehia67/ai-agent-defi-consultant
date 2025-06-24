@@ -4,7 +4,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                        DeFi Consultant AI Agent                          │
+│                        DeFi Consultant AI Agent                         │
 └───────────────────────────────┬─────────────────────────────────────────┘
                                 │
                                 ▼
@@ -14,8 +14,8 @@
         │                         │                           │
         ▼                         ▼                           ▼
 ┌───────────────┐      ┌───────────────────┐      ┌────────────────────┐
-│  Smart Wallet  │      │     Chainlink     │      │    Core Plugins    │
-│    Plugin      │      │   Automation      │      │                    │
+│  Smart Wallet │      │     Chainlink     │      │    Core Plugins    │
+│    Plugin     │      │   Automation      │      │                    │
 └───────┬───────┘      │     Plugin        │      │ - OpenAI/Anthropic │
         │              └─────────┬─────────┘      │ - SQL Database     │
         │                        │                │ - EVM Integration  │
@@ -30,7 +30,7 @@
         ▼                        ▼
 ┌───────────────────────────────────────────┐
 │             Avalanche Network             │
-│      (Fuji Testnet & Mainnet)            │
+│      (Fuji Testnet & Mainnet)             │
 └───────────────────────────────────────────┘
 ```
 
