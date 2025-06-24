@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { logger } from '@elizaos/core';
-import { AVALANCHE_FUJI_CONFIG } from '../../configs/networks';
+import fetch from 'node-fetch';
 import https from 'https';
 import http from 'http';
 
@@ -34,8 +34,6 @@ export async function initializeProvider(): Promise<ethers.providers.JsonRpcProv
   const RPC_URLS = [
     // Prioritize the Alchemy endpoint which is confirmed working
     'https://avax-fuji.g.alchemy.com/v2/0syyeOykgk2mVv2b6DPMOqnYsmvNZCUV',
-    'https://api.avax-test.network/ext/bc/C/rpc',
-    'https://rpc.ankr.com/avalanche_fuji',
     'https://avalanche-fuji-c-chain.publicnode.com',
     'https://avalanche-fuji.blockpi.network/v1/rpc/public',
     'https://rpc.ankr.com/avalanche_fuji-c'
@@ -45,7 +43,7 @@ export async function initializeProvider(): Promise<ethers.providers.JsonRpcProv
   const avalancheFujiNetwork = {
     name: 'avalanche-fuji',
     chainId: 43113,
-    _defaultProvider: (providers: any) => new providers.JsonRpcProvider('https://api.avax-test.network/ext/bc/C/rpc')
+    _defaultProvider: (providers: any) => new providers.JsonRpcProvider('https://avax-fuji.g.alchemy.com/v2/0syyeOykgk2mVv2b6DPMOqnYsmvNZCUV')
   };
   
   logger.info('Attempting to connect to Avalanche Fuji testnet...');
@@ -56,7 +54,7 @@ export async function initializeProvider(): Promise<ethers.providers.JsonRpcProv
   // Try a direct fetch to test connectivity before attempting ethers.js connection
   try {
     logger.info('Testing direct fetch to Avalanche Fuji RPC...');
-    const testUrl = 'https://api.avax-test.network/ext/bc/C/rpc';
+    const testUrl = 'https://avax-fuji.g.alchemy.com/v2/0syyeOykgk2mVv2b6DPMOqnYsmvNZCUV';
     const response = await fetch(testUrl, {
       method: 'POST',
       headers: {

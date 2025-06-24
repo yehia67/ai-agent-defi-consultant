@@ -18,8 +18,7 @@ import smartWalletPlugin from './plugins/smart-wallet-plugin/plugin.ts';
 export const character: Character = {
   name: 'DeFi Consultant',
   plugins: [
-    smartWalletPlugin.name,
-    chainlinkAutomationPlugin.name,
+    ...(process.env.CHAINLINK_AUTOMATION_DEPLOYER_PK ? ['@elizaos/plugin-evm'] : []),
     '@elizaos/plugin-sql',
     ...(process.env.ANTHROPIC_API_KEY ? ['@elizaos/plugin-anthropic'] : []),
     ...(process.env.OPENAI_API_KEY ? ['@elizaos/plugin-openai'] : []),
@@ -180,7 +179,7 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 export const projectAgent: ProjectAgent = {
   character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [smartWalletPlugin, chainlinkAutomationPlugin],
+  plugins: [smartWalletPlugin],
 };
 const project: Project = {
   agents: [projectAgent],

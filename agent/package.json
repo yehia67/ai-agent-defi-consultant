@@ -34,10 +34,13 @@
     "@elizaos/cli": "1.0.12",
     "@elizaos/core": "1.0.12",
     "@elizaos/plugin-bootstrap": "1.0.12",
+    "@elizaos/plugin-evm": "^1.0.12",
     "@elizaos/plugin-knowledge": "1.0.8",
     "@elizaos/plugin-local-ai": "1.0.4",
     "@elizaos/plugin-sql": "1.0.12",
     "@rhinestone/module-sdk": "0.2.7",
+    "fetch": "^1.1.0",
+    "node-fetch": "^3.3.2",
     "viem": "2.31.3",
     "zod": "3.24.2"
   },

@@ -11,9 +11,7 @@ import { BiconomyWalletService } from './service';
 // --- Plugin ---
 const plugin: Plugin = {
     name: 'biconomy_avalanche_wallet',
-    description: 'Creates Biconomy ERC-4337 smart wallets on Avalanche network with advanced features',
-    priority: -1000,
-    
+    description: 'Creates Biconomy ERC-4337 smart wallets on Avalanche network with advanced features',    
     config: {
         BICONOMY_PAYMASTER_API_KEY: process.env.BICONOMY_PAYMASTER_API_KEY,
         BICONOMY_BUNDLER_URL: process.env.BICONOMY_BUNDLER_URL,

@@ -1,11 +1,8 @@
-import type { Plugin, Service } from '@elizaos/core';
+import type { Plugin } from '@elizaos/core';
 import { type IAgentRuntime, logger } from '@elizaos/core';
-import { ethers } from 'ethers';
-import { configSchema, ChainlinkAutomationConfig, DEFAULT_CONFIG } from './config';
+import { configSchema } from './config';
 import { ChainlinkAutomationService } from './service';
 import { actions, setChainlinkService } from './actions';
-import { setChainlinkService as setTestChainlinkService } from './test-action';
-import { testChainlinkAction } from './test-action';
 
 // Import routes
 import { routes } from './apis';
@@ -22,10 +19,7 @@ export const ChainlinkAutomationPlugin: Plugin = {
   dependencies: ['@elizaos/plugin-sql'],
   
   // Register all actions from the actions module
-  actions: [
-    testChainlinkAction,
-    ...actions
-  ],
+  actions: actions,
   
   // Register services
   services: [ChainlinkAutomationService],
@@ -100,7 +94,6 @@ export const ChainlinkAutomationPlugin: Plugin = {
         // Set the service instance for actions and test action
         logger.info('Setting service instances in plugin.ts');
         setChainlinkService(service);
-        setTestChainlinkService(service);
         
         // Verify service was properly set
         logger.info('Service instances set. Verifying initialization...');

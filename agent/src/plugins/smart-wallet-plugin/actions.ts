@@ -7,8 +7,8 @@ import {
     type State,
     logger,
 } from '@elizaos/core';
-
 import { generateBiconomyWallet } from './provider';
+
 // --- Action ---
 export const createWalletAction: Action = {
     name: 'CREATE_WALLET',
@@ -27,19 +27,20 @@ export const createWalletAction: Action = {
     ): Promise<Content> => {
         try {
             // Log the start of wallet creation
-            logger.info('Starting wallet creation process');
-            
-            const useMainnet = process.env.USE_AVALANCHE_MAINNET === 'true';
-            const { smartAddress, chainName, chainId, eoa } = await generateBiconomyWallet(useMainnet);
-
-            // Log successful wallet creation
-            logger.info(`Wallet created successfully: ${smartAddress} on ${chainName}`);
-
+           
+const {
+    smartAddress,
+    chainId,
+    chainName,
+    eoa: {
+        privateKey,
+    },
+} = await generateBiconomyWallet();
             const responseContent: Content = {
               text:
                 `🪪 A new smart wallet has been created!\n\n` +
                 `📍 **Address:** ${smartAddress}\n` +
-                `🔐 **Private Key:** ${eoa.privateKey}\n` +
+                `🔐 **Private Key:** ${privateKey}\n` +
                 `🌐 **Network:** ${chainName}\n` +
                 `🔗 **Chain ID:** ${chainId}\n\n` +
                 `This wallet supports:\n` +
@@ -48,32 +49,23 @@ export const createWalletAction: Action = {
                 `- Cross-chain operations\n` +
                 `- Smart contract interactions\n\n` +
                 `Would you like help funding your wallet or exploring DeFi opportunities?`,
-              actions: ["CREATE_WALLET"],
-              source: message.content?.source || "biconomy_plugin",
+              actions: ["CREATE_WALLET_SUCCESS"],
+              source: message.content?.source,
               data: {
-                address: smartAddress,
-                privateKey: eoa.privateKey,
-                chainId: chainId,
-                chainName: chainName
+                address: "hello",
+                privateKey: "hello",
+                chainId: "hello",
+                chainName: "hello"
               }
             };
 
             // Send immediate callback to prevent hanging
             if (callback) {
                 try {
-                    await callback({
-                        type: 'SUCCESS',
-                        message: `Wallet created: ${smartAddress} on ${chainName}`,
-                        data: {
-                            address: smartAddress,
-                            chainId,
-                            chainName,
-                            privateKey: eoa.privateKey
-                        }
-                    });
-                    logger.info('CREATE_WALLET callback sent successfully');
+                    await callback(responseContent);
+                    logger.info('HELLO_WORLD callback sent successfully');
                 } catch (callbackError) {
-                    logger.error('CREATE_WALLET callback error:', callbackError);
+                    logger.error('HELLO_WORLD callback error:', callbackError);
                 }
             }
 
@@ -100,8 +92,8 @@ export const createWalletAction: Action = {
             // Return error response
             return {
                 text: `❌ Failed to create wallet: ${error.message}`,
-                actions: ["CREATE_WALLET"],
-                source: message.content?.source || "biconomy_plugin"
+                actions: ["HELLO_WORLD_FAILED"],
+                source: message.content?.source
             };
         }
     },
