@@ -6,6 +6,7 @@ import {
   type ProjectAgent,
 } from '@elizaos/core';
 import smartWalletPlugin from './plugins/smart-wallet-plugin/plugin.ts';
+import priceFeederPlugin from './plugins/chainlink-price-feeder/plugin.ts';
 import chainlinkAutomationPlugin from './plugins/chainlink-automation-plugin/plugin.ts';
 
 /**
@@ -206,14 +207,8 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 
 export const projectAgent: ProjectAgent = {
   character,
-  init: async (runtime: IAgentRuntime): Promise<void> => {
-    // Initialize character
-    await initCharacter({ runtime });
-    
-    // Log initialization with network support
-    logger.info('Initialized with Avalanche Fuji Testnet and Avalanche Mainnet support');
-  },
-  plugins: [smartWalletPlugin, chainlinkAutomationPlugin],
+  init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
+  plugins: [smartWalletPlugin, chainlinkAutomationPlugin, priceFeederPlugin],
 };
 const project: Project = {
   agents: [projectAgent],
