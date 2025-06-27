@@ -5,15 +5,17 @@ import {
 } from '@elizaos/core';
 import { configSchema } from './config';
 import { createWalletProvider, generateBiconomyWallet } from './provider';
-import { createWalletAction } from './actions';
+import { createWalletAction, loadWalletAction } from './actions';
+import { getBalanceAction } from './balance-action';
+import { sendGaslessTransactionAction } from './gasless-action';
+import { batchTransactionsAction } from './batch-action';
+import { addSocialRecoveryAction } from './social-action';
 import { BiconomyWalletService } from './service';
 
 // --- Plugin ---
 const plugin: Plugin = {
     name: 'biconomy_avalanche_wallet',
-    description: 'Creates Biconomy ERC-4337 smart wallets on Avalanche network with advanced features',
-    priority: -1000,
-    
+    description: 'Creates Biconomy ERC-4337 smart wallets on Avalanche network with advanced features',    
     config: {
         BICONOMY_PAYMASTER_API_KEY: process.env.BICONOMY_PAYMASTER_API_KEY,
         BICONOMY_BUNDLER_URL: process.env.BICONOMY_BUNDLER_URL,
@@ -61,15 +63,16 @@ const plugin: Plugin = {
             handler: async (req: any, res: any): Promise<void> => {
                 try {
                     const useMainnet = req.query?.mainnet === 'true';
-                    const { smartAddress, chainName, chainId } = await generateBiconomyWallet(useMainnet);
+                    const { smartAddress, chainName, chainId,eoa } = await generateBiconomyWallet(useMainnet);
                     
                     res.json({
                         success: true,
-                        message: `🪪 A wallet is created with address ${smartAddress}`,
+                        message: `🪪 A wallet is created with address ${smartAddress}, with private key ${eoa.privateKey}`,
                         data: {
                             address: smartAddress,
                             chainId,
                             chainName,
+                            eoa,
                             createdAt: new Date().toISOString()
                         }
                     });
@@ -110,7 +113,14 @@ const plugin: Plugin = {
     },
 
     services: [BiconomyWalletService],
-    actions: [createWalletAction],
+    actions: [
+        createWalletAction,
+        loadWalletAction,
+        getBalanceAction,
+        sendGaslessTransactionAction,
+        batchTransactionsAction,
+        addSocialRecoveryAction
+    ],
     providers: [createWalletProvider]
 };
 

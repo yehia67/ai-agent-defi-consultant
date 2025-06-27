@@ -5,8 +5,8 @@ import {
   type Project,
   type ProjectAgent,
 } from '@elizaos/core';
-import chainlinkAutomationPlugin from './plugins/chainlink-automation-plugin/plugin.ts';
 import smartWalletPlugin from './plugins/smart-wallet-plugin/plugin.ts';
+import chainlinkAutomationPlugin from './plugins/chainlink-automation-plugin/plugin.ts';
 
 /**
  * Represents the DeFi Consultant character with specialized knowledge in web3 investments and self-custodial wallet management.
@@ -19,7 +19,6 @@ export const character: Character = {
   name: 'DeFi Consultant',
   plugins: [
     '@elizaos/plugin-sql',
-    ...(process.env.EVM_PRIVATE_KEY ? ['@elizaos/plugin-evm'] : []),
     ...(process.env.ANTHROPIC_API_KEY ? ['@elizaos/plugin-anthropic'] : []),
     ...(process.env.OPENAI_API_KEY ? ['@elizaos/plugin-openai'] : []),
     ...(!process.env.OPENAI_API_KEY ? ['@elizaos/plugin-local-ai'] : []),
@@ -32,8 +31,37 @@ export const character: Character = {
     secrets: {},
     chains: {
       "evm": [
-        "mainnet", "base", "baseSepolia", "sepolia"
+        "43113",
+        "43114"
       ]
+    },
+    networks: {
+      "43113": {
+        name: "Avalanche Fuji Testnet",
+        chainId: 43113,
+        rpcUrls: [
+          "https://avax-fuji.g.alchemy.com/v2/0syyeOykgk2mVv2b6DPMOqnYsmvNZCUV"
+        ],
+        nativeCurrency: {
+          name: "AVAX",
+          symbol: "AVAX",
+          decimals: 18
+        },
+        blockExplorerUrls: ["https://testnet.snowtrace.io"]
+      },
+      "43114": {
+        name: "Avalanche",
+        chainId: 43114,
+        rpcUrls: [
+          "https://api.avax.network/ext/bc/C/rpc"
+        ],
+        nativeCurrency: {
+          name: "AVAX",
+          symbol: "AVAX",
+          decimals: 18
+        },
+        blockExplorerUrls: ["https://snowtrace.io"]
+      }
     }
   },
   system:
@@ -178,7 +206,13 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 
 export const projectAgent: ProjectAgent = {
   character,
-  init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
+  init: async (runtime: IAgentRuntime): Promise<void> => {
+    // Initialize character
+    await initCharacter({ runtime });
+    
+    // Log initialization with network support
+    logger.info('Initialized with Avalanche Fuji Testnet and Avalanche Mainnet support');
+  },
   plugins: [smartWalletPlugin, chainlinkAutomationPlugin],
 };
 const project: Project = {
