@@ -23,11 +23,10 @@ export class ChainlinkPriceFeedService {
    */
   async getLatestRoundId(feedAddress: string): Promise<bigint> {
     try {
-      console.log(`contract cotracyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy `);
       const aggregator = new ethers.Contract(feedAddress, aggregatorAbi, this.provider);
       const latest = await aggregator.latestRoundData();
       const latestRoundId = latest.roundId;
-      console.log(`Latest round IDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDID ${latestRoundId}`);
+      console.log(`Latest round  ${latestRoundId}`);
       return latestRoundId;
     } catch (err) {
       logger.error('Failed to get latest round ID:', err);

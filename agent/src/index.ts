@@ -180,9 +180,7 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 export const projectAgent: ProjectAgent = {
   character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [smartWalletPlugin, priceFeederPlugin,
-    //chainlinkAutomationPlugin
-  ],
+  plugins: [smartWalletPlugin, chainlinkAutomationPlugin, priceFeederPlugin],
 };
 const project: Project = {
   agents: [projectAgent],
