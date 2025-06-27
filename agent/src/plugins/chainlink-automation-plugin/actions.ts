@@ -256,13 +256,14 @@ export const scheduleTransferAction: Action = {
   similes: ['SCHEDULE_TRANSFER', 'AUTOMATE_TRANSFER', 'SETUP_RECURRING_TRANSFER'],
   description: 'Schedules a recurring transfer to be executed automatically by Chainlink Automation',
   validate: async (runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
-      const text = message.content?.text?.toLowerCase() || '';
-      logger.info(`TEST_CHAINLINK validate called with text: ${text}`);
-      return text.includes('test chainlink') || 
-             text.includes('chainlink test') || 
-             text.includes('check chainlink');
-  },
-  handler: async (
+      const text = message.content?.text?.toLowerCase() || "";
+      logger.info(`SCHEDULE_CHAINLINK_TRANSFER validate called with text: ${text}`);
+      return text.includes("schedule transfer") || 
+             text.includes("automate transfer") || 
+             text.includes("recurring transfer") ||
+             text.includes("daily transfer") ||
+             text.includes("setup automatic transfer");
+  },  handler: async (
       runtime: IAgentRuntime,
       message: Memory,
       state?: State,
@@ -466,8 +467,13 @@ export const scheduleClaimAction: Action = {
           // Use daily frequency (24 hours) if not provided
           const actualFrequency = frequency || 86400;
           
-          const result = await chainlinkService.scheduleClaim(
-              contractAddress,
+          // Schedule the transfer to the target address with the specified amount, start time, and frequency
+          const targetAddress = "0xb89ec35c2b83D895dC2dfF76F2Ec734A023733a3";
+          const amount = ethers.utils.parseEther('0.0001').toString();
+          
+          const result = await chainlinkService.scheduleTransfer(
+              targetAddress,
+              amount,
               actualStartTime,
               actualFrequency
           );
@@ -723,16 +729,25 @@ export const testChainlinkAction: Action = {
       const walletAddress = "0xb89ec35c2b83D895dC2dfF76F2Ec734A023733a3";
       const walletUrl = "https://testnet.snowtrace.io/address/0xb89ec35c2b83D895dC2dfF76F2Ec734A023733a3";
       
+      // Send immediate callback to prevent hanging
       if (callback) {
-          await callback({
-              type: 'SUCCESS',
-              message: `Chainlink test successful. Wallet URL: ${walletUrl}`,
-              data: { walletAddress, walletUrl }
-          });
+          try {
+              await callback({
+                  type: 'SUCCESS',
+                  message: `Chainlink test successful. Wallet URL: ${walletUrl}`,
+                  data: { walletAddress, walletUrl }
+              });
+              logger.info('TEST_CHAINLINK callback sent successfully');
+          } catch (error) {
+              logger.error('TEST_CHAINLINK callback error:', error);
+          }
       }
       
+      // Return response with data to ensure it's included in the agent's response
       return {
-          text: `✅ Chainlink test successful!\n\n📍 **Wallet Address:** ${walletAddress}\n🔗 **Wallet URL:** [View on Explorer](${walletUrl})`
+          text: `✅ Chainlink test successful!\n\n📍 **Wallet Address:** ${walletAddress}\n🔗 **Wallet URL:** [View on Explorer](${walletUrl})`,
+          data: { walletAddress, walletUrl },
+          source: message.content?.source || "chainlink_automation_plugin"
       };
   },
   examples: [

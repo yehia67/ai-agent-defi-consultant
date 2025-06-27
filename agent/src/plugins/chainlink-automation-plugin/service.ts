@@ -1,28 +1,145 @@
 import { ethers } from 'ethers';
-import { logger } from '@elizaos/core';
+import { logger, Service, IAgentRuntime } from '@elizaos/core';
 import { initializeProvider, ChainlinkProviderResponse, ScheduledTransfer } from './provider';
 import { CHAINLINK_REGISTRY_ABI, SCHEDULED_TRANSFER_ABI, SCHEDULED_TRANSFER_BYTECODE } from './constants';
 
-// ABI for the Chainlink Automation Registry
-
 /**
- * Chainlink Automation Service for managing scheduled tasks
+ * Service class for Chainlink Automation
  */
-export class ChainlinkAutomationService {
-  private provider: ethers.providers.JsonRpcProvider;
-  private wallet: ethers.Wallet;
-  private registryAddress: string;
+export class ChainlinkAutomationService extends Service {
+  static serviceType = 'CHAINLINK_AUTOMATION';
+  static capabilityDescription = 'Manages scheduled tasks and automated transfers using Chainlink Automation';
+  
+  // Required by Service abstract class
+  capabilityDescription = ChainlinkAutomationService.capabilityDescription;
+  
+  private provider!: ethers.providers.JsonRpcProvider;
+  private wallet!: ethers.Wallet;
+  private registryAddress!: string;
+  // runtime is already declared in the Service base class
+  private initialized: boolean = false; // Track initialization status
   private deployedContracts: Map<string, string> = new Map(); // Map of task type to contract address
   private scheduledTransfers: Map<string, ScheduledTransfer> = new Map(); // Map of transfer ID to transfer details
   
-  constructor(privateKey: string, registryAddress: string) {
-    this.provider = initializeProvider();
-    this.wallet = new ethers.Wallet(privateKey, this.provider);
-    this.registryAddress = registryAddress;
+  constructor() {
+    super();
+    logger.info('ChainlinkAutomationService instance created');
+    this.initialized = false;
+  }
+  
+  /**
+   * Check if the service is properly initialized
+   * @returns true if the service is initialized and ready to use
+   */
+  public isInitialized(): boolean {
+    return this.initialized;
+  }
+  
+  /**
+   * Get network information to check provider connection
+   * @returns Network information including chainId and name
+   */
+  public async getNetworkInfo(): Promise<{chainId: number, name: string}> {
+    if (!this.provider) {
+      throw new Error('Provider not initialized');
+    }
     
-    logger.info('Chainlink Automation Service initialized');
-    logger.debug(`Using wallet address: ${this.wallet.address}`);
-    logger.debug(`Using registry address: ${this.registryAddress}`);
+    try {
+      const network = await this.provider.getNetwork();
+      return {
+        chainId: network.chainId,
+        name: network.name
+      };
+    } catch (error) {
+      logger.error('Failed to get network info:', error);
+      throw new Error(`Provider connection failed: ${error.message}`);
+    }
+  }
+  
+  static async start(runtime: IAgentRuntime): Promise<Service> {
+    logger.info('Starting ChainlinkAutomationService');
+    const service = new ChainlinkAutomationService();
+    service.runtime = runtime;
+    await service.initialize();
+    return service;
+  }
+  
+  /**
+   * Initialize the service
+   */
+  public async initialize(): Promise<void> {
+    try {
+      logger.info('Initializing ChainlinkAutomationService...');
+      
+      // Check for required environment variables early
+      const privateKey = process.env.CHAINLINK_AUTOMATION_DEPLOYER_PK;
+      if (!privateKey) {
+        logger.error('CHAINLINK_AUTOMATION_DEPLOYER_PK environment variable is not set');
+        throw new Error('CHAINLINK_AUTOMATION_DEPLOYER_PK environment variable is not set');
+      }
+      
+      const registryAddress = process.env.CHAINLINK_AUTOMATION_REGISTRY_ADDRESS;
+      if (!registryAddress) {
+        logger.error('CHAINLINK_AUTOMATION_REGISTRY_ADDRESS environment variable is not set');
+        throw new Error('CHAINLINK_AUTOMATION_REGISTRY_ADDRESS environment variable is not set');
+      }
+      
+      // Initialize provider with simplified approach
+      logger.info('Initializing blockchain provider...');
+      try {
+        // Use the provider initialization function with improved compatibility
+        this.provider = await Promise.race([
+          initializeProvider(),
+          new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error('Provider initialization timed out after 30 seconds')), 30000)
+          )
+        ]);
+        
+        // Verify we can get the block number to confirm connection
+        const blockNumber = await this.provider.getBlockNumber();
+        logger.info(`Provider initialized successfully. Connected to Avalanche Fuji testnet (block: ${blockNumber})`);
+        
+        // Set initialized flag to true
+        this.initialized = true;
+      } catch (providerError) {
+        this.initialized = false;
+        logger.error(`Provider initialization failed: ${providerError.message}`);
+        throw new Error(`Failed to initialize Avalanche Fuji provider: ${providerError.message}`);
+      }
+      
+      // Initialize wallet
+      try {
+        this.wallet = new ethers.Wallet(privateKey, this.provider);
+        logger.info(`Wallet initialized with address: ${this.wallet.address}`);
+        
+        // Check wallet balance to ensure it has funds
+        const balance = await this.wallet.getBalance();
+        logger.info(`Wallet balance: ${ethers.utils.formatEther(balance)} AVAX`);
+        
+        if (balance.eq(0)) {
+          logger.warn('Warning: Wallet has zero balance. Transactions will fail.');
+        }
+      } catch (walletError) {
+        this.initialized = false;
+        logger.error(`Wallet initialization failed: ${walletError.message}`);
+        throw new Error(`Failed to initialize wallet: ${walletError.message}`);
+      }
+      
+      this.registryAddress = registryAddress;
+      
+      // Set initialized flag to true only after all initialization steps have succeeded
+      this.initialized = true;
+      logger.info('ChainlinkAutomationService initialized successfully');
+    } catch (error) {
+      this.initialized = false;
+      logger.error('ChainlinkAutomationService initialization failed:', error);
+      throw new Error(`ChainlinkAutomationService initialization failed: ${error.message}`);
+    }
+  }
+  
+  async stop(): Promise<void> {
+    logger.info('Stopping ChainlinkAutomationService');
+    // Clean up resources if needed
   }
   
   /**
@@ -30,17 +147,22 @@ export class ChainlinkAutomationService {
    * @returns Response with contract address
    */
   async deployScheduledTransferContract(): Promise<ChainlinkProviderResponse> {
+    if (!this.wallet) {
+      throw new Error('Wallet not initialized');
+    }
+    
+    logger.info('Deploying ScheduledTransfer contract...');
+    
     try {
-      logger.info('Deploying ScheduledTransfer contract...');
-      
       // Check if we already have a deployed contract
       if (this.deployedContracts.has('scheduledTransfer')) {
+        const contractAddress = this.deployedContracts.get('scheduledTransfer');
         return {
           success: true,
+          message: `Contract already deployed at ${contractAddress}`,
           data: {
-            contractAddress: this.deployedContracts.get('scheduledTransfer')
-          },
-          error: 'Contract already deployed'
+            contractAddress
+          }
         };
       }
       
@@ -51,8 +173,8 @@ export class ChainlinkAutomationService {
         this.wallet
       );
       
-      // Deploy contract with the wallet address as the owner
-      const contract = await factory.deploy(this.wallet.address);
+      // Deploy contract
+      const contract = await factory.deploy();
       await contract.deployed();
       
       // Store the contract address
@@ -67,17 +189,19 @@ export class ChainlinkAutomationService {
       
       return {
         success: true,
+        message: `ScheduledTransfer contract deployed at ${contract.address}`,
         data: {
-          contractAddress: contract.address
-        },
-        txHash,
-        explorerUrl
+          contractAddress: contract.address,
+          txHash,
+          explorerUrl
+        }
       };
     } catch (error) {
       logger.error('Failed to deploy ScheduledTransfer contract:', error);
       return {
         success: false,
-        error: `Failed to deploy contract: ${error.message}`
+        message: `Failed to deploy contract: ${error.message}`,
+        error: error.message
       };
     }
   }
@@ -92,6 +216,10 @@ export class ChainlinkAutomationService {
     contractAddress: string,
     gasLimit: number = 500000
   ): Promise<ChainlinkProviderResponse> {
+    if (!this.wallet) {
+      throw new Error('Wallet not initialized');
+    }
+    
     try {
       logger.info(`Registering contract ${contractAddress} with Chainlink Automation...`);
       
@@ -126,18 +254,20 @@ export class ChainlinkAutomationService {
       
       return {
         success: true,
+        message: `Contract registered with Chainlink Automation. Upkeep ID: ${upkeepId}`,
         data: {
           upkeepId,
-          contractAddress
-        },
-        txHash,
-        explorerUrl
+          contractAddress,
+          txHash,
+          explorerUrl
+        }
       };
     } catch (error) {
       logger.error('Failed to register with Chainlink Automation:', error);
       return {
         success: false,
-        error: `Failed to register with Chainlink Automation: ${error.message}`
+        message: `Failed to register with Chainlink Automation: ${error.message}`,
+        error: error.message
       };
     }
   }
@@ -156,6 +286,10 @@ export class ChainlinkAutomationService {
     startTime: number,
     frequency: number
   ): Promise<ChainlinkProviderResponse> {
+    if (!this.wallet) {
+      throw new Error('Wallet not initialized');
+    }
+    
     try {
       logger.info(`Scheduling transfer of ${amount} wei to ${recipient}...`);
       
@@ -171,7 +305,7 @@ export class ChainlinkAutomationService {
       
       // Connect to the contract
       const contract = new ethers.Contract(
-        contractAddress,
+        contractAddress as string,
         SCHEDULED_TRANSFER_ABI,
         this.wallet
       );
@@ -196,7 +330,7 @@ export class ChainlinkAutomationService {
         amount,
         startTime,
         frequency,
-        contractAddress
+        contractAddress: contractAddress as string
       });
       
       const txHash = tx.hash;
@@ -208,59 +342,24 @@ export class ChainlinkAutomationService {
       
       return {
         success: true,
+        message: `Successfully scheduled transfer of ${amount} wei to ${recipient}`,
         data: {
           transferId,
           recipient,
           amount,
           startTime,
           frequency,
-          contractAddress
-        },
-        txHash,
-        explorerUrl
+          contractAddress,
+          txHash,
+          explorerUrl
+        }
       };
     } catch (error) {
       logger.error('Failed to schedule transfer:', error);
       return {
         success: false,
-        error: `Failed to schedule transfer: ${error.message}`
-      };
-    }
-  }
-  
-  /**
-   * Schedule a claim operation to be executed by Chainlink Automation
-   * @param contractAddress Address of the contract to claim from
-   * @param startTime Start time in seconds since epoch
-   * @param frequency Frequency in seconds
-   * @returns Response with claim ID
-   */
-  async scheduleClaim(
-    contractAddress: string,
-    startTime: number,
-    frequency: number
-  ): Promise<ChainlinkProviderResponse> {
-    try {
-      logger.info(`Scheduling claim from contract ${contractAddress}...`);
-      
-      // Similar implementation as scheduleTransfer but for claim operation
-      // This would require a different contract or a more generic implementation
-      
-      // For now, return a placeholder response
-      return {
-        success: true,
-        data: {
-          claimId: '0',
-          contractAddress,
-          startTime,
-          frequency
-        }
-      };
-    } catch (error) {
-      logger.error('Failed to schedule claim:', error);
-      return {
-        success: false,
-        error: `Failed to schedule claim: ${error.message}`
+        message: `Failed to schedule transfer: ${error.message}`,
+        error: error.message
       };
     }
   }

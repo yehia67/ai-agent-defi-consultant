@@ -9,11 +9,11 @@ export const configSchema = z.object({
     
     // Avalanche Fuji RPC URLs with fallbacks
     AVALANCHE_FUJI_RPC_URL: z.string()
-        .default("https://avalanche-fuji.drpc.org")
+        .default("https://avax-fuji.g.alchemy.com/v2/0syyeOykgk2mVv2b6DPMOqnYsmvNZCUV")
         .describe("Primary RPC URL for Avalanche Fuji testnet"),
     
     AVALANCHE_FUJI_RPC_URL_BACKUP: z.string()
-        .default("https://api.avax-test.network/ext/bc/C/rpc")
+        .default("https://avax-fuji.g.alchemy.com/v2/0syyeOykgk2mVv2b6DPMOqnYsmvNZCUV")
         .describe("Backup RPC URL for Avalanche Fuji testnet"),
     
     // Chainlink Automation Registry address on Fuji testnet
@@ -32,8 +32,8 @@ export type ChainlinkAutomationConfig = z.infer<typeof configSchema>;
 
 // Default configuration values
 export const DEFAULT_CONFIG: Partial<ChainlinkAutomationConfig> = {
-    AVALANCHE_FUJI_RPC_URL: "https://avalanche-fuji.drpc.org",
-    AVALANCHE_FUJI_RPC_URL_BACKUP: "https://api.avax-test.network/ext/bc/C/rpc",
+    AVALANCHE_FUJI_RPC_URL: "https://avax-fuji.g.alchemy.com/v2/0syyeOykgk2mVv2b6DPMOqnYsmvNZCUV",
+    AVALANCHE_FUJI_RPC_URL_BACKUP: "https://avax-fuji.g.alchemy.com/v2/0syyeOykgk2mVv2b6DPMOqnYsmvNZCUV",
     CHAINLINK_AUTOMATION_REGISTRY_ADDRESS: "0x819B58A646CDd8289275A87653a2aA4902b14fe6",
     LOG_LEVEL: "info"
 };
