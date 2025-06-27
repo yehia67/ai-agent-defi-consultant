@@ -7,6 +7,7 @@ import {
 } from '@elizaos/core';
 import chainlinkAutomationPlugin from './plugins/chainlink-automation-plugin/plugin.ts';
 import smartWalletPlugin from './plugins/smart-wallet-plugin/plugin.ts';
+import priceFeederPlugin from './plugins/chainlink-price-feeder/plugin.ts';
 
 /**
  * Represents the DeFi Consultant character with specialized knowledge in web3 investments and self-custodial wallet management.
@@ -179,7 +180,9 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 export const projectAgent: ProjectAgent = {
   character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [smartWalletPlugin, chainlinkAutomationPlugin],
+  plugins: [smartWalletPlugin, priceFeederPlugin,
+    //chainlinkAutomationPlugin
+  ],
 };
 const project: Project = {
   agents: [projectAgent],
