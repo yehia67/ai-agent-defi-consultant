@@ -10,28 +10,28 @@
                                 ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                           ElizaOS Framework                             │
-└───────┬─────────────────────────┬───────────────────────────┬───────────┘
-        │                         │                           │
-        ▼                         ▼                           ▼
-┌───────────────┐      ┌───────────────────┐      ┌────────────────────┐
-│  Smart Wallet │      │     Chainlink     │      │    Core Plugins    │
-│    Plugin     │      │   Automation      │      │                    │
-└───────┬───────┘      │     Plugin        │      │ - OpenAI/Anthropic │
-        │              └─────────┬─────────┘      │ - SQL Database     │
-        │                        │                │ - EVM Integration  │
-        │                        │                └────────────────────┘
-        ▼                        ▼
-┌───────────────┐      ┌───────────────────┐
-│   Biconomy    │      │     Chainlink     │
-│Account Abstr. │      │    Automation     │
-│     SDK       │      │     Network       │
-└───────┬───────┘      └─────────┬─────────┘
-        │                        │
-        ▼                        ▼
-┌───────────────────────────────────────────┐
-│             Avalanche Network             │
-│      (Fuji Testnet & Mainnet)             │
-└───────────────────────────────────────────┘
+└───┬───────────┬─────────────────────────┬───────────────────────────┬───┘
+    │           │                         │                           │
+    ▼           ▼                         ▼                           ▼
+┌─────────────────┐ ┌───────────────┐      ┌───────────────────┐      ┌────────────────────┐
+│   Bedrock       │ │  Smart Wallet │      │     Chainlink     │      │    Core Plugins    │
+│    Plugin       │ │    Plugin     │      │   Automation      │      │                    │
+└────────┬────────┘ └───────┬───────┘      │     Plugin        │      │ - OpenAI/Anthropic │
+         │                  │              └─────────┬─────────┘      │ - SQL Database     │
+         │                  │                        │                │ - EVM Integration  │
+         ▼                  │                        │                └────────────────────┘
+┌─────────────────┐         ▼                        ▼
+│   Bedrock       │ ┌───────────────┐      ┌───────────────────┐
+│   AI Agent      │ │   Biconomy    │      │     Chainlink     │
+└────────┬────────┘ │Account Abstr. │      │    Automation     │
+         │          │     SDK       │      │     Network       │
+         ▼          └───────┬───────┘      └─────────┬─────────┘
+┌─────────────────┐         │                        │
+│getTransactionHis│         ▼                        ▼
+│tory AWS Lambda  │ ┌───────────────────────────────────────────┐
+│   function      │ │             Avalanche Network             │
+└─────────────────┘ │      (Fuji Testnet & Mainnet)             │
+                    └───────────────────────────────────────────┘
 ```
 
 ### Key Features
@@ -48,6 +48,11 @@
 - 📝 Contract Deployment
 - 🔄 Upkeep Registration
 - 📊 Transfer Management
+
+**Bedrock Plugin:**
+- 🤖 AI-Powered Transaction Analysis
+- 📝 Transaction Summarization
+- ☁️ AWS Bedrock AI Agent Integration
 
 ## Chromion: A Chainlink Hackathon Project
 
@@ -76,10 +81,13 @@ ai-agent-defi-consultant/
 │   │   │   └── networks.ts    # Network configurations
 │   │   ├── index.ts           # Main agent entry point
 │   │   └── plugins/           # Custom plugins
+│   │       ├── bedrock-plugin/               # AWS Bedrock AI Agent integration
 │   │       ├── chainlink-automation-plugin/  # Chainlink Automation integration
 │   │       └── smart-wallet-plugin/          # Biconomy Smart Wallet integration
 │   ├── package.json           # Agent dependencies
 │   └── .env.example           # Environment variables template
+├── aws-lambda/                # AWS Lambda functions
+│   └── lambda_function.py     # getTransactionHistory function
 └── contracts/                 # Smart contracts
     ├── src/
     │   ├── ScheduledTransfer.sol  # Chainlink Automation contract
@@ -191,6 +199,19 @@ The Chainlink Automation Plugin enables scheduling of recurring transactions and
 
 #### Implementation:
 This plugin interacts with the Chainlink Automation Registry to register and manage upkeeps for scheduled tasks. It deploys the ScheduledTransfer contract and configures it to execute transfers at specified intervals, leveraging Chainlink's decentralized automation network for reliable execution.
+
+### Bedrock Plugin
+
+The Bedrock Plugin integrates AWS Bedrock AI agents to provide intelligent transaction analysis and DeFi consulting capabilities.
+
+#### Features:
+- **AI-Powered Transaction Analysis**: Leverages AWS Bedrock AI agents to analyze transaction patterns and provide insights
+- **Transaction Summarization**: Generates concise summaries of transaction history and trading behavior
+- **DeFi Consulting**: Provides expert guidance on DeFi strategies based on historical data analysis
+- **Session Management**: Maintains conversation continuity for ongoing analysis sessions
+
+#### Implementation:
+The plugin connects to an AI agent that is set up in AWS Bedrock, which specializes in DeFi transaction analysis. The AI agent is connected to a Lambda function that supplies it with transaction history data for a given wallet address using SIM API by Dune. The plugin uses AWS Bedrock Agent Runtime to invoke this pre-configured AI agent and retrieve intelligent insights about transaction patterns and DeFi strategies. The plugin supports both explicit AWS credentials and default credential chain authentication, with configurable regions and trace enablement for development purposes.
 
 ## Environment Variables
 
