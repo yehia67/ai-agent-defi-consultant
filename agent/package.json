@@ -27,12 +27,17 @@
     "dist"
   ],
   "dependencies": {
+    "@aws-sdk/client-bedrock-agent": "^3.835.0",
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.835.0",
     "@biconomy/abstractjs": "1.0.18",
     "@biconomy/account": "4.5.7",
     "@biconomy/bundler": "3.1.4",
     "@biconomy/paymaster": "3.1.4",
     "@elizaos/cli": "1.0.12",
     "@elizaos/core": "1.0.12",
+
+    "@elizaos/plugin-anthropic": "1.0.3",
+
     "@elizaos/plugin-bootstrap": "1.0.12",
     "@elizaos/plugin-evm": "^1.0.12",
     "@elizaos/plugin-knowledge": "1.0.8",
@@ -48,7 +53,8 @@
     "@vitest/coverage-v8": "2.1.5",
     "prettier": "3.5.3",
     "tsup": "8.4.0",
-    "vitest": "3.1.4"
+    "vitest": "3.1.4",
+    "@types/bun": "latest"
   },
   "scripts": {
     "start": "elizaos start",
@@ -65,5 +71,11 @@
   },
   "publishConfig": {
     "access": "public"
+
+  },
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^5"
+
   }
 }

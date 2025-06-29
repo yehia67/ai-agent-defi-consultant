@@ -6,8 +6,12 @@ import {
   type ProjectAgent,
 } from '@elizaos/core';
 import smartWalletPlugin from './plugins/smart-wallet-plugin/plugin.ts';
+
+import bedrockPlugin from './plugins/bedrock-plugin/plugin.ts';
+
 import priceFeederPlugin from './plugins/chainlink-price-feeder/plugin.ts';
 import chainlinkAutomationPlugin from './plugins/chainlink-automation-plugin/plugin.ts';
+
 
 /**
  * Represents the DeFi Consultant character with specialized knowledge in web3 investments and self-custodial wallet management.
@@ -93,86 +97,87 @@ export const character: Character = {
     'liquidity pools and staking opportunities',
   ],
 
-  messageExamples: [
-    [
-      {
-        name: '{{name1}}',
-        content: {
-          text: 'Create a new wallet',
-        },
-      },
-      {
-        name: 'DeFi Consultant',
-        content: {
-          text: "I've created a new Biconomy wallet for you. Your wallet address is 0x1a2b3c4d5e6f7g8h9i0j. You can now use this wallet for all your transactions and investments.",
-        },
-      },
-      {
-        name: '{{name1}}',
-        content: {
-          text: 'I want to deposit ETH to my wallet',
-        },
-      },
-      {
-        name: 'DeFi Consultant',
-        content: {
-          text: "You can deposit ETH to your wallet by sending it to this address: 0x1a2b3c4d5e6f7g8h9i0j. I'll monitor for incoming transactions and notify you once the deposit is confirmed.",
-        },
-      },
-    ],
-    [
-      {
-        name: '{{name1}}',
-        content: {
-          text: 'What is the price of Ethereum?',
-        },
-      },
-      {
-        name: 'DeFi Consultant',
-        content: {
-          text: 'According to Chainlink price feeds, Ethereum is currently trading at $3,245.67. This price was updated 2 minutes ago.',
-        },
-      },
-      {
-        name: '{{name1}}',
-        content: {
-          text: 'Calculate ETH performance compared to Cardano',
-        },
-      },
-      {
-        name: 'DeFi Consultant',
-        content: {
-          text: 'Based on Chainlink data, ETH has appreciated 15.3% over the past 30 days, while Cardano (ADA) has appreciated 8.7%. ETH has outperformed ADA by 6.6% in this period. Would you like to see a longer timeframe comparison?',
-        },
-      },
-    ],
-    [
-      {
-        name: '{{name1}}',
-        content: {
-          text: 'Send ETH to avalanche',
-        },
-      },
-      {
-        name: 'DeFi Consultant',
-        content: {
-          text: "I'll bridge 0.5 ETH from Ethereum mainnet to Avalanche using Chainlink CCIP. The current bridge fee is 0.002 ETH. Would you like to proceed with this transaction?",
-        },
-      },
-      {
-        name: '{{name1}}',
-        content: {
-          text: 'Yes, proceed',
-        },
-      },
-      {
-        name: 'DeFi Consultant',
-        content: {
-          text: "Transaction initiated. Your ETH is being bridged to Avalanche. Transaction hash: 0xabcdef1234567890. The funds should arrive in your Avalanche wallet within 10-15 minutes. I'll notify you when the transfer is complete.",
-        },
-      },
-    ],
-  ],
+  // messageExamples: [
+  //   [
+  //     {
+  //       name: '{{name1}}',
+  //       content: {
+  //         text: 'Create a new wallet',
+  //       },
+  //       actions: ["CREATE_WALLET"],
+  //     },
+  //     {
+  //       name: 'DeFi Consultant',
+  //       content: {
+  //         text: "I've created a new Biconomy wallet for you. Your wallet address is 0x1a2b3c4d5e6f7g8h9i0j. You can now use this wallet for all your transactions and investments.",
+  //       },
+  //     },
+  //     {
+  //       name: '{{name1}}',
+  //       content: {
+  //         text: 'I want to deposit ETH to my wallet',
+  //       },
+  //     },
+  //     {
+  //       name: 'DeFi Consultant',
+  //       content: {
+  //         text: "You can deposit ETH to your wallet by sending it to this address: 0x1a2b3c4d5e6f7g8h9i0j. I'll monitor for incoming transactions and notify you once the deposit is confirmed.",
+  //       },
+  //     },
+  //   ],
+  //   [
+  //     {
+  //       name: '{{name1}}',
+  //       content: {
+  //         text: 'What is the price of Ethereum?',
+  //       },
+  //     },
+  //     {
+  //       name: 'DeFi Consultant',
+  //       content: {
+  //         text: 'According to Chainlink price feeds, Ethereum is currently trading at $3,245.67. This price was updated 2 minutes ago.',
+  //       },
+  //     },
+  //     {
+  //       name: '{{name1}}',
+  //       content: {
+  //         text: 'Calculate ETH performance compared to Cardano',
+  //       },
+  //     },
+  //     {
+  //       name: 'DeFi Consultant',
+  //       content: {
+  //         text: 'Based on Chainlink data, ETH has appreciated 15.3% over the past 30 days, while Cardano (ADA) has appreciated 8.7%. ETH has outperformed ADA by 6.6% in this period. Would you like to see a longer timeframe comparison?',
+  //       },
+  //     },
+  //   ],
+  //   [
+  //     {
+  //       name: '{{name1}}',
+  //       content: {
+  //         text: 'Send ETH to avalanche',
+  //       },
+  //     },
+  //     {
+  //       name: 'DeFi Consultant',
+  //       content: {
+  //         text: "I'll bridge 0.5 ETH from Ethereum mainnet to Avalanche using Chainlink CCIP. The current bridge fee is 0.002 ETH. Would you like to proceed with this transaction?",
+  //       },
+  //     },
+  //     {
+  //       name: '{{name1}}',
+  //       content: {
+  //         text: 'Yes, proceed',
+  //       },
+  //     },
+  //     {
+  //       name: 'DeFi Consultant',
+  //       content: {
+  //         text: "Transaction initiated. Your ETH is being bridged to Avalanche. Transaction hash: 0xabcdef1234567890. The funds should arrive in your Avalanche wallet within 10-15 minutes. I'll notify you when the transfer is complete.",
+  //       },
+  //     },
+  //   ],
+  // ],
 
   style: {
     all: [
@@ -207,8 +212,11 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 
 export const projectAgent: ProjectAgent = {
   character,
+
+
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [smartWalletPlugin, chainlinkAutomationPlugin, priceFeederPlugin],
+  plugins: [smartWalletPlugin, chainlinkAutomationPlugin, priceFeederPlugin,bedrockPlugin],
+
 };
 const project: Project = {
   agents: [projectAgent],
