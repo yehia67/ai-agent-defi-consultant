@@ -8,26 +8,26 @@
 └───────────────────────────────┬─────────────────────────────────────────┘
                                 │
                                 ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           ElizaOS Framework                             │
-└───┬───────────┬─────────────────────────┬───────────────────────────┬───┘
-    │           │                         │                           │
-    ▼           ▼                         ▼                           ▼
-┌─────────────────┐ ┌───────────────┐      ┌───────────────────┐      ┌────────────────────┐
-│   Bedrock       │ │  Smart Wallet │      │     Chainlink     │      │    Core Plugins    │
-│    Plugin       │ │    Plugin     │      │   Automation      │      │                    │
-└────────┬────────┘ └───────┬───────┘      │     Plugin        │      │ - OpenAI/Anthropic │
-         │                  │              └─────────┬─────────┘      │ - SQL Database     │
-         │                  │                        │                │ - EVM Integration  │
-         ▼                  │                        │                └────────────────────┘
-┌─────────────────┐         ▼                        ▼
-│   Bedrock       │ ┌───────────────┐      ┌───────────────────┐
-│   AI Agent      │ │   Biconomy    │      │     Chainlink     │
-└────────┬────────┘ │Account Abstr. │      │    Automation     │
-         │          │     SDK       │      │     Network       │
-         ▼          └───────┬───────┘      └─────────┬─────────┘
-┌─────────────────┐         │                        │
-│getTransactionHis│         ▼                        ▼
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           ElizaOS Framework                                                │
+└───┬──────────────────────────┬───────────────────────────────┬───────────────┬───────────────┬─┘
+    │                            │                               │               │             │
+    ▼                            ▼                               ▼               ▼               ▼
+┌─────────────────┐ ┌───────────────┐ ┌───────────────────┐ ┌─────────────────┐ ┌────────────────────┐
+│   Bedrock       │ │  Smart Wallet │ │     Chainlink     │ │   Chainlink     │ │    Core Plugins    │
+│    Plugin       │ │    Plugin     │ │   Automation      │ │ Historical Price│ │                    │
+└────────┬────────┘ └───────┬───────┘ │     Plugin        │ │ Feeder Plugin   │ │ - OpenAI/Anthropic │
+         │                  │         └─────────┬─────────┘ └────────┬────────┘ │ - SQL Database     │
+         │                  │                   │                    │          │ - EVM Integration  │
+         ▼                  │                   │                    │          └────────────────────┘
+┌─────────────────┐         ▼                   ▼                    ▼
+│   Bedrock       │ ┌───────────────┐ ┌───────────────────┐ ┌─────────────────┐
+│   AI Agent      │ │   Biconomy    │ │     Chainlink     │ │   Chainlink     │
+└────────┬────────┘ │Account Abstr. │ │    Automation     │ │ Data Feeds      │
+         │          │     SDK       │ │     Network       │ └─────────────────┘
+         ▼          └───────┬───────┘ └─────────┬─────────┘
+┌─────────────────┐         │                   │
+│getTransactionHis│         ▼                   ▼
 │tory AWS Lambda  │ ┌───────────────────────────────────────────┐
 │   function      │ │             Avalanche Network             │
 └─────────────────┘ │      (Fuji Testnet & Mainnet)             │
@@ -48,6 +48,13 @@
 - 📝 Contract Deployment
 - 🔄 Upkeep Registration
 - 📊 Transfer Management
+
+**Chainlink Historical Price Feeder Plugin:**
+ - 📈 Latest Crypto Prices
+ - 📊 Historical Price Data (by round)
+ - 🔍 Symbol Recognition in Messages
+ - 🧠 Natural Language Understanding
+ - 🚫 Invalid Token Handling & Suggestions
 
 **Bedrock Plugin:**
 - 🤖 AI-Powered Transaction Analysis
@@ -83,6 +90,7 @@ ai-agent-defi-consultant/
 │   │   └── plugins/           # Custom plugins
 │   │       ├── bedrock-plugin/               # AWS Bedrock AI Agent integration
 │   │       ├── chainlink-automation-plugin/  # Chainlink Automation integration
+│   │       ├── chainlink-price-feeder/       # Chainlink Historical Price Feeder integration
 │   │       └── smart-wallet-plugin/          # Biconomy Smart Wallet integration
 │   ├── package.json           # Agent dependencies
 │   └── .env.example           # Environment variables template
@@ -99,9 +107,13 @@ ai-agent-defi-consultant/
 
 ## Smart Contracts
 
-### Overview
+### Chainlink Automation
 
 The smart contract repository contains the Chainlink Automation-compatible contracts that enable scheduled transfers of AVAX on the Avalanche network. The main contract is `ScheduledTransfer.sol`, which implements the Chainlink Automation interface to execute recurring transfers based on predefined schedules.
+
+### Chainlink Price Feeder
+The smart contract repository includes `src/HistoricalPriceFeeder.sol`, a utility contract designed to fetch both historical and latest cryptocurrency price data using Chainlink oracles on the Avalanche network. By providing a Chainlink price feed address and a specific round ID, the contract enables precise retrieval of historical price points, making it ideal for audit trails, analytics, and time-based financial logic.
+
 
 ### Setup and Testing
 
@@ -213,6 +225,25 @@ The Bedrock Plugin integrates AWS Bedrock AI agents to provide intelligent trans
 #### Implementation:
 The plugin connects to an AI agent that is set up in AWS Bedrock, which specializes in DeFi transaction analysis. The AI agent is connected to a Lambda function that supplies it with transaction history data for a given wallet address using SIM API by Dune. The plugin uses AWS Bedrock Agent Runtime to invoke this pre-configured AI agent and retrieve intelligent insights about transaction patterns and DeFi strategies. The plugin supports both explicit AWS credentials and default credential chain authentication, with configurable regions and trace enablement for development purposes.
 
+### Chainlink Price Feed Plugin
+
+The Chainlink Price Feed Plugin integrates Chainlink oracles to fetch real-time and historical cryptocurrency price data on the Avalanche network.
+
+#### Features:
+
+- **Latest Price Retrieval**: Get up-to-date price information for supported tokens like BTC, AVAX, and ETH
+- **Natural Language Parsing**: Understands user queries like "What's the price of BTC for the last 3 rounds?"
+- **Error Handling & Suggestions**: Informs users when a token is unsupported and suggests valid symbols
+
+#### Implementation:
+
+The plugin uses Chainlink's decentralized oracle network to query price feeds via smart contracts deployed on Avalanche network. It includes a flexible action handler that:
+
+- Parses user text to identify target symbols and desired historical depth
+- Maps symbols to Chainlink feed addresses
+- Queries Chainlink aggregators for current and past round data
+- Returns a friendly, structured response summarizing the price information
+
 ## Environment Variables
 
 The project uses environment variables for configuration. Copy the `.env.example` file to `.env` and configure the following variables:
@@ -268,6 +299,7 @@ Example commands:
 - "Schedule a daily transfer of 0.0001 AVAX to 0xb89ec35c2b83D895dC2dfF76F2Ec734A023733a3"
 - "Check my wallet balance"
 - "What DeFi strategies do you recommend for low risk?"
+- "What's the price of BTC for the last 3 months?""
 
 ## License
 
