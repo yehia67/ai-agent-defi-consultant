@@ -35,7 +35,9 @@
     "@biconomy/paymaster": "3.1.4",
     "@elizaos/cli": "1.0.12",
     "@elizaos/core": "1.0.12",
+
     "@elizaos/plugin-anthropic": "1.0.3",
+
     "@elizaos/plugin-bootstrap": "1.0.12",
     "@elizaos/plugin-evm": "^1.0.12",
     "@elizaos/plugin-knowledge": "1.0.8",
@@ -69,9 +71,11 @@
   },
   "publishConfig": {
     "access": "public"
+
   },
   "private": true,
   "peerDependencies": {
     "typescript": "^5"
+
   }
 }

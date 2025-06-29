@@ -5,7 +5,11 @@ import {
 } from '@elizaos/core';
 import { configSchema } from './config';
 import { createWalletProvider, generateBiconomyWallet } from './provider';
-import { createWalletAction } from './actions';
+import { createWalletAction, loadWalletAction } from './actions';
+import { getBalanceAction } from './balance-action';
+import { sendGaslessTransactionAction } from './gasless-action';
+import { batchTransactionsAction } from './batch-action';
+import { addSocialRecoveryAction } from './social-action';
 import { BiconomyWalletService } from './service';
 
 // --- Plugin ---
@@ -109,7 +113,14 @@ const plugin: Plugin = {
     },
 
     services: [BiconomyWalletService],
-    actions: [createWalletAction],
+    actions: [
+        createWalletAction,
+        loadWalletAction,
+        getBalanceAction,
+        sendGaslessTransactionAction,
+        batchTransactionsAction,
+        addSocialRecoveryAction
+    ],
     providers: [createWalletProvider]
 };
 
